@@ -1,5 +1,6 @@
 package com.example.recyclerview
 
+import android.graphics.Canvas
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -68,6 +69,40 @@ class MainActivity : AppCompatActivity() {
             myAdapter.itemDismiss(viewHolder.layoutPosition)
         }
 
+        override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+            return 0.1f
+        }
+
+        //        override fun isLongPressDragEnabled(): Boolean {
+//            return false
+//        }
+//
+//        override fun isItemViewSwipeEnabled(): Boolean {
+//            return false
+//        }
+
+        override fun onChildDraw(
+            c: Canvas,
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            dX: Float,
+            dY: Float,
+            actionState: Int,
+            isCurrentlyActive: Boolean
+        ) {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                val value = 1 - Math.abs(dX) / viewHolder.itemView.getWidth()
+                viewHolder.itemView.setAlpha(value)
+                viewHolder.itemView.setScaleY(value)
+            }
+        }
+
+        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+            super.clearView(recyclerView, viewHolder)
+            viewHolder.itemView.setAlpha(1f)
+            viewHolder.itemView.setScaleY(1f)
+        }
     }
 
 
@@ -109,6 +144,11 @@ class MainActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             holder.textView.text = data[position]
             holder.textView.setBackgroundResource(colorList[position % 3])
+//            holder.textView.setOnTouchListener { view, motionEvent ->
+//                itemTouchHelper.startDrag(holder)
+//                itemTouchHelper.startSwipe(holder)
+//                return@setOnTouchListener true
+//            }
         }
 
         fun setData(list : List<String>) {
